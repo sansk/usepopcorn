@@ -1,6 +1,6 @@
 import { useState } from "react";
-import WatchedSummary from "./WatchedSummary";
-import WatchedMovieItem from "./WatchedMovieItem";
+import WatchedSummary from "../WatchedSummary";
+import WatchedMovieItem from "../WatchedMovieItem";
 
 const MovieWatchedBox = ({ tempWatchedData }) => {
   const [watched, setWatched] = useState(tempWatchedData);
@@ -16,11 +16,7 @@ const MovieWatchedBox = ({ tempWatchedData }) => {
       {isOpen2 && (
         <>
           <WatchedSummary watched={watched} />
-          <ul className="list">
-            {watched.map((movie) => (
-              <WatchedMovieItem movie={movie} key={movie.imdbID} />
-            ))}
-          </ul>
+          <WatchedMovieItem watched={watched} />
         </>
       )}
     </div>

@@ -1,7 +1,7 @@
-const NumResults = () => {
+const NumResults = ({ length }) => {
   return (
     <p className="num-results">
-      Found <strong>X</strong> results
+      Found <strong>{length}</strong> results
     </p>
   );
 };

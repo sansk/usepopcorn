@@ -1,8 +1,7 @@
 import { useState } from "react";
 import MovieListItem from "./MovieListItem";
 
-const MovieListBox = ({ tempMovieData }) => {
-  const [movies, setMovies] = useState(tempMovieData);
+const MovieListBox = ({ movies }) => {
   const [isOpen1, setIsOpen1] = useState(true);
 
   return (
@@ -12,13 +11,7 @@ const MovieListBox = ({ tempMovieData }) => {
         onClick={() => setIsOpen1((open) => !open)}>
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && (
-        <ul className="list">
-          {movies?.map((movie) => (
-            <MovieListItem key={movie.imdbID} movie={movie} />
-          ))}
-        </ul>
-      )}
+      {isOpen1 && <MovieListItem movies={movies} />}
     </div>
   );
 };
