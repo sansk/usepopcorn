@@ -19,12 +19,15 @@ const StarRating = ({
   size = 48,
   className = "",
   defaultRating = 0,
+  messages = [],
+  onSetRating,
 }) => {
   const [rating, setRating] = useState(defaultRating);
   const [hoverRating, setHoverRating] = useState(0);
 
   const handleRating = (val) => {
     setRating(val);
+    onSetRating(val);
   };
 
   const textStyle = {
@@ -49,7 +52,9 @@ const StarRating = ({
           />
         ))}
       </div>
-      <p style={textStyle}>{hoverRating || rating || ""}</p>
+      {messages.length === maxRating
+        ? messages[hoverRating ? hoverRating - 1 : rating - 1]
+        : hoverRating || rating || ""}
     </div>
   );
 };
@@ -60,6 +65,8 @@ StarRating.propTypes = {
   size: PropTypes.number,
   className: PropTypes.string,
   defaultRating: PropTypes.number,
+  messages: PropTypes.array,
+  onSetRating: PropTypes.func,
 };
 
 export default StarRating;
