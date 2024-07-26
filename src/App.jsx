@@ -9,6 +9,8 @@ import MovieListItem from "./components/MovieListItem";
 import WatchedSummary from "./components/WatchedSummary";
 import WatchedMovieItem from "./components/WatchedMovieItem";
 import Loading from "./components/Loading";
+import ErrorMessage from "./components/ErrorMessage";
+import MovieDetails from "./components/MovieDetails";
 
 const tempMovieData = [
   {
@@ -63,35 +65,79 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const searchTerm = "interstellar";
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("inception");
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     const fetchMovies = async () => {
-      setIsLoading(true);
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&s=${searchTerm}`
-      );
-      const data = await res.json();
-      setMovies(data.Search);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+
+        if (!res.ok)
+          throw new Error("Something happened while fetching Movies!");
+
+        const data = await res.json();
+
+        if (data.Response === "False") throw new Error(data.Error);
+
+        setMovies(data.Search);
+      } catch (err) {
+        console.log(err.message);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
+    if (query.length < 3) {
+      setError("");
+      setMovies([]);
+      return;
+    }
+
     fetchMovies();
-  }, []);
+  }, [query]);
+
+  const handleSelectedMovie = (id) => {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  };
 
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults length={movies.length} />
       </NavBar>
       <Main>
-        <Box>{isLoading ? <Loading /> : <MovieListItem movies={movies} />}</Box>
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieItem watched={watched} />
+          {isLoading && <Loading />}
+          {!isLoading && !error && (
+            <MovieListItem
+              movies={movies}
+              handleSelectedMovie={handleSelectedMovie}
+            />
+          )}
+          {error && <ErrorMessage message={error} />}
+        </Box>
+        <Box>
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              setSelectedId={setSelectedId}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieItem watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
