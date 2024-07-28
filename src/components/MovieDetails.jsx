@@ -28,6 +28,19 @@ const MovieDetails = ({ selectedId, setSelectedId, onAddWatched, watched }) => {
     (movie) => movie.imdbID === selectedId
   )?.userRating;
 
+  const {
+    Title: title,
+    Year: year,
+    Poster: poster,
+    Runtime: runtime,
+    imdbRating,
+    Plot: plot,
+    Released: released,
+    Actors: actors,
+    Director: director,
+    Genre: genre,
+  } = movie;
+
   useEffect(
     function () {
       async function fetchMoviesDetails() {
@@ -47,6 +60,22 @@ const MovieDetails = ({ selectedId, setSelectedId, onAddWatched, watched }) => {
     [selectedId]
   );
 
+  useEffect(() => {
+    if (!title) return;
+    document.title = `MOVIE | ${title}`;
+
+    return () => (document.title = "usePopcorn");
+  }, [title]);
+
+  useEffect(() => {
+    const cb_kd = (e) => {
+      if (e.code === "Escape") setSelectedId(null);
+    };
+    document.addEventListener("keydown", cb_kd);
+
+    return () => document.removeEventListener("keydown", cb_kd);
+  }, [setSelectedId]);
+
   return (
     <div className="details">
       {isLoading ? (
@@ -57,16 +86,16 @@ const MovieDetails = ({ selectedId, setSelectedId, onAddWatched, watched }) => {
             <button className="btn-back" onClick={() => setSelectedId(null)}>
               &larr;
             </button>
-            <img src={movie.Poster} alt={`Poster of ${movie.Title}`} />
+            <img src={poster} alt={`Poster of ${title}`} />
             <div className="details-overview">
-              <h2>{movie.Title}</h2>
+              <h2>{title}</h2>
               <p>
-                {movie.Released} &bull; {movie.Runtime}
+                {released} &bull; {runtime}
               </p>
-              <p>{movie.Genre}</p>
+              <p>{genre}</p>
               <p>
                 <span>⭐</span>
-                {movie.imdbRating} IMDb Rating
+                {imdbRating} IMDb Rating
               </p>
             </div>
           </header>
@@ -94,14 +123,13 @@ const MovieDetails = ({ selectedId, setSelectedId, onAddWatched, watched }) => {
               )}
             </div>
             <p>
-              <em>{movie.Plot}</em>
+              <em>{plot}</em>
             </p>
-            <p>Staring {movie.Actors}</p>
-            <p>Directed by {movie.Director}</p>
+            <p>Staring {actors}</p>
+            <p>Directed by {director}</p>
           </section>
         </>
       )}
-      {selectedId}
     </div>
   );
 };
